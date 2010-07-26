@@ -1,0 +1,36 @@
+Name:                moio
+Version:             0.1.0
+Synopsis:            A library to combine effectful streams.
+Description:
+
+  Moio (Multiple-Occurrence I/O) is a library that provides composable
+  abstractions for event-driven programming: producers and actors. The
+  @Producer@ monad is a generalisation of the @IO@ monad that returns
+  not just a single result /at the end/ of its execution, but a
+  potentially infinite stream of values distributed over time /during/
+  its life. The @Actor@ category is in essence a producer transformer,
+  and it can also be seen as a further generalisation of @Producer@,
+  because it can make use of an incoming stream of events besides
+  outputting a stream. Given a @Producer a@ and an @Actor a b@, we can
+  construct a @Producer b@ by feeding the output of the first producer
+  into the actor. Thanks to the monadic interface, the structure of
+  the event stream network can be entirely dynamic.
+
+Author:              Patai Gergely
+Maintainer:          Patai Gergely (patai.gergely@gmail.com)
+Copyright:           (c) 2010, Patai Gergely
+License:             BSD3
+License-file:        LICENSE
+
+Category:            Control, Concurrency
+Stability:           experimental
+Build-type:          Simple
+Extra-Source-Files:
+  README.md
+  CHANGES
+
+Cabal-version:       >=1.2
+Library
+  Exposed-modules:     Control.Moio
+  Build-depends:       base >= 4 && < 5
+  ghc-options:         -Wall -O2
