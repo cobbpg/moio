@@ -43,6 +43,8 @@ module Control.Moio
   , pToA
   , amToA
   , aToAM
+  , knot
+  , afix
   -- * Other derived combinators
   , (>*<)
   , (<<-)
@@ -365,3 +367,26 @@ pf <<- px = do
 -- | '<<-' with its arguments flipped.
 (->>) :: Producer a -> Producer (Actor a b) -> Producer b
 (->>) = flip (<<-)
+
+-- | Create a producer from an actor by feeding back some of its
+-- output (tagged with 'Left') and emitting the rest.
+knot :: Actor s (Either s a) -> Producer a
+knot (A a) = P $ \s -> do
+  c <- newChan
+  forkIO $ a c $ \msx -> case msx of
+    Nothing -> do
+      s Nothing
+      writeChan c Nothing
+    Just (Left s) -> writeChan c (Just s)
+    Just (Right x) -> s (Just x)
+  return ()
+
+-- | Create a producer from an actor by feeding back its output
+-- besides emitting it.
+afix :: Actor a a -> Producer a
+afix (A a) = P $ \s -> do
+  c <- newChan
+  forkIO $ a c $ \mx -> do
+    s mx
+    writeChan c mx
+  return ()
